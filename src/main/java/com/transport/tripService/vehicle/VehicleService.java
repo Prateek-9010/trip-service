@@ -1,5 +1,7 @@
 package com.transport.tripService.vehicle;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 @Service
@@ -26,5 +28,9 @@ public class VehicleService {
 
         Vehicle vehicle = new Vehicle(vehicleNumber, ownerName, capacity);
         return vehicleRepository.save(vehicle);
+    }
+
+     public List<Vehicle> getAllVehicles() {
+        return vehicleRepository.findAll();
     }
 }
