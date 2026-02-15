@@ -1,7 +1,7 @@
 package com.transport.tripService.vehicle;
 
 import java.util.List;
-
+import com.transport.tripService.common.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -21,7 +21,7 @@ public class VehicleService {
 
         vehicleRepository.findByVehicleNumber(vehicleNumber)
                 .ifPresent(v -> {
-                    throw new IllegalArgumentException(
+                    throw new ResourceNotFoundException(
                             "Vehicle with number " + vehicleNumber + " already exists"
                     );
                 });

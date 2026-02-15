@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
+
 
 @RestController
 @RequestMapping("/api/vehicles")
@@ -27,7 +29,7 @@ public class VehicleController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Vehicle registerVehicle(@RequestBody CreateVehicleRequest request) {
+    public Vehicle registerVehicle(@Valid @RequestBody CreateVehicleRequest request) {
 
         return vehicleService.registerVehicle(
                 request.getVehicleNumber(),

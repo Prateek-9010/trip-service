@@ -1,69 +1,127 @@
 package com.transport.tripService.trip;
 
+import com.transport.tripService.expense.ExpenseRepository;
 import com.transport.tripService.vehicle.Vehicle;
 import com.transport.tripService.vehicle.VehicleRepository;
 import org.springframework.stereotype.Service;
+import com.transport.tripService.common.ResourceNotFoundException;
 
 @Service
 public class TripService {
 
-    private final TripRepository tripRepository;
-    private final VehicleRepository vehicleRepository;
+        private final TripRepository tripRepository;
+        private final VehicleRepository vehicleRepository;
+        private final ExpenseRepository expenseRepository;
 
-    public TripService(TripRepository tripRepository,
-                       VehicleRepository vehicleRepository) {
-        this.tripRepository = tripRepository;
-        this.vehicleRepository = vehicleRepository;
-    }
+        public TripService(TripRepository tripRepository,
+                        VehicleRepository vehicleRepository,
+                        ExpenseRepository expenseRepository) {
+                this.tripRepository = tripRepository;
+                this.vehicleRepository = vehicleRepository;
+                this.expenseRepository = expenseRepository;
+        }
 
-    /**
-     * Create a new trip for a vehicle.
-     */
-    public Trip createTrip(Long vehicleId,
-                           String source,
-                           String destination,
-                           Double revenue) {
+        private TripResponse mapToResponse(Trip trip) {
+                return new TripResponse(
+                                trip.getId(),
+                                trip.getVehicle().getVehicleNumber(),
+                                trip.getSource(),
+                                trip.getDestination(),
+                                trip.getRevenue(),
+                                trip.getStatus().name());
+        }
 
-        // 1️⃣ Validate vehicle exists
-        Vehicle vehicle = vehicleRepository.findById(vehicleId)
-                .orElseThrow(() ->
-                        new IllegalArgumentException("Vehicle not found with id: " + vehicleId)
-                );
+        /**
+         * Create a new trip for a vehicle.
+         */
+        public TripResponse createTrip(Long vehicleId,
+                        String source,
+                        String destination,
+                        Double revenue) {
 
-        // 2️⃣ Create trip
-        Trip trip = new Trip(vehicle, source, destination, revenue);
+                // 1️⃣ Validate vehicle exists
+                Vehicle vehicle = vehicleRepository.findById(vehicleId)
+                                .orElseThrow(() -> new ResourceNotFoundException(
+                                                "Vehicle not found with id: " + vehicleId));
 
-        // 3️⃣ Save and return
-        return tripRepository.save(trip);
-    }
+                // 2️⃣ Create trip
+                Trip trip = new Trip(vehicle, source, destination, revenue);
 
-    /**
-     * Start a trip.
-     */
-    public Trip startTrip(Long tripId) {
+                // 3️⃣ Save and return
+                Trip savedTrip = tripRepository.save(trip);
+                return mapToResponse(savedTrip);
+        }
 
-        Trip trip = tripRepository.findById(tripId)
-                .orElseThrow(() ->
-                        new IllegalArgumentException("Trip not found with id: " + tripId)
-                );
+        /**
+         * Start a trip.
+         */
+        public Trip startTrip(Long tripId) {
 
-        trip.startTrip();
+                Trip trip = tripRepository.findById(tripId)
+                                .orElseThrow(() -> new ResourceNotFoundException("Trip not found with id: " + tripId));
 
-        return tripRepository.save(trip);
-    }
+                trip.startTrip();
 
-    /**
-     * Complete a trip.
-     */
-    public Trip completeTrip(Long tripId) {
+                return tripRepository.save(trip);
+        }
 
-        Trip trip = tripRepository.findById(tripId)
-                .orElseThrow(() ->
-                        new IllegalArgumentException("Trip not found with id: " + tripId)
-                );
+        /**
+         * Complete a trip.
+         */
+        public Trip completeTrip(Long tripId) {
 
-        trip.completeTrip();
+                Trip trip = tripRepository.findById(tripId)
+                                .orElseThrow(() -> new ResourceNotFoundException("Trip not found with id: " + tripId));
 
-        return tripRepository.save(trip);
-    }
+                trip.completeTrip();
+
+                return tripRepository.save(trip);
+        }
+
+        public TripFinancialSummary getFinancialSummary(Long tripId,
+                        Double totalExpense) {
+
+                Trip trip = tripRepository.findById(tripId)
+                                .orElseThrow(() -> new ResourceNotFoundException("Trip not found with id: " + tripId));
+
+                Double profit = trip.getRevenue() - totalExpense;
+
+                return new TripFinancialSummary(
+                                trip.getId(),
+                                trip.getVehicle().getVehicleNumber(),
+                                trip.getSource(),
+                                trip.getDestination(),
+                                trip.getRevenue(),
+                                totalExpense,
+                                profit);
+        }
+
+        public TripLedgerResponse getLedger(Long tripId) {
+
+                Trip trip = tripRepository.findById(tripId)
+                                .orElseThrow(() -> new ResourceNotFoundException("Trip not found with id: " + tripId));
+
+                var expenses = expenseRepository.findByTripId(tripId);
+
+                var expenseDTOs = expenses.stream()
+                                .map(e -> new LedgerExpenseDTO(
+                                                e.getCategory().getName(),
+                                                e.getAmount(),
+                                                e.getDescription()))
+                                .toList();
+
+                Double totalExpense = expenseRepository.getTotalExpenseForTrip(tripId);
+                Double profit = trip.getRevenue() - totalExpense;
+
+                return new TripLedgerResponse(
+                                trip.getId(),
+                                trip.getVehicle().getVehicleNumber(),
+                                trip.getSource(),
+                                trip.getDestination(),
+                                trip.getRevenue(),
+                                expenseDTOs,
+                                totalExpense,
+                                profit);
+        }
+
 }

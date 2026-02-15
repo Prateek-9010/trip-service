@@ -3,6 +3,10 @@ package com.transport.tripService.trip;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import com.transport.tripService.expense.ExpenseService;
+
+import jakarta.validation.Valid;
+
 import java.util.List;
 
 @RestController
@@ -11,11 +15,14 @@ public class TripController {
 
     private final TripService tripService;
     private final TripRepository tripRepository;
+    private final ExpenseService expenseService;
 
     public TripController(TripService tripService,
-                          TripRepository tripRepository) {
+            TripRepository tripRepository,
+            ExpenseService expenseService) {
         this.tripService = tripService;
         this.tripRepository = tripRepository;
+        this.expenseService = expenseService;
     }
 
     /**
@@ -23,14 +30,13 @@ public class TripController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Trip createTrip(@RequestBody CreateTripRequest request) {
+    public TripResponse createTrip(@Valid @RequestBody CreateTripRequest request) {
 
         return tripService.createTrip(
                 request.getVehicleId(),
                 request.getSource(),
                 request.getDestination(),
-                request.getRevenue()
-        );
+                request.getRevenue());
     }
 
     /**
@@ -55,5 +61,18 @@ public class TripController {
     @GetMapping
     public List<Trip> getAllTrips() {
         return tripRepository.findAll();
+    }
+
+    @GetMapping("/{id}/summary")
+    public TripFinancialSummary getTripSummary(@PathVariable Long id) {
+
+        Double totalExpense = expenseService.getTotalExpenseForTrip(id);
+
+        return tripService.getFinancialSummary(id, totalExpense);
+    }
+
+    @GetMapping("/{id}/ledger")
+    public TripLedgerResponse getTripLedger(@PathVariable Long id) {
+        return tripService.getLedger(id);
     }
 }

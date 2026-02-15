@@ -1,10 +1,23 @@
 package com.transport.tripService.trip;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+
 public class CreateTripRequest {
 
+
+    @NotNull(message = "Vehicle ID is required")
     private Long vehicleId;
+
+    @NotBlank(message = "Source is required")
     private String source;
+
+    @NotBlank(message = "Destination is required")
     private String destination;
+
+    @NotNull(message = "Revenue is required")
+    @Positive(message = "Revenue must be positive")
     private Double revenue;
 
     public Long getVehicleId() {
