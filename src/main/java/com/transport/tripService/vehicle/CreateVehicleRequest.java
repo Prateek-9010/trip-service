@@ -1,42 +1,30 @@
 package com.transport.tripService.vehicle;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 
 public class CreateVehicleRequest {
 
-    @NotBlank(message = "Vehicle number is required")
-    private String vehicleNumber;
+    @NotBlank(message = "Registration number is required")
+    private String registrationNumber;
 
-    @NotBlank(message = "Owner name is required")
-    private String ownerName;
+    @NotBlank(message = "Vehicle type is required")
+    private String vehicleType;
 
-    @NotNull(message = "Capacity is required")
-    @Positive(message = "Capacity must be positive")
-    private Double capacity;
+    // === Getters and Setters ===
 
-    public String getVehicleNumber() {
-        return vehicleNumber;
+    public String getRegistrationNumber() {
+        return registrationNumber;
     }
 
-    public void setVehicleNumber(String vehicleNumber) {
-        this.vehicleNumber = vehicleNumber;
+    public void setRegistrationNumber(String registrationNumber) {
+        this.registrationNumber = registrationNumber;
     }
 
-    public String getOwnerName() {
-        return ownerName;
+    public String getVehicleType() {
+        return vehicleType;
     }
 
-    public void setOwnerName(String ownerName) {
-        this.ownerName = ownerName;
-    }
-
-    public Double getCapacity() {
-        return capacity;
-    }
-
-    public void setCapacity(Double capacity) {
-        this.capacity = capacity;
+    public void setVehicleType(String vehicleType) {
+        this.vehicleType = vehicleType;
     }
 }

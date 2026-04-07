@@ -2,7 +2,7 @@ package com.transport.tripService.expense;
 
 import com.transport.tripService.trip.Trip;
 import jakarta.persistence.*;
-
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -13,63 +13,73 @@ public class Expense {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "trip_id", nullable = false)
     private Trip trip;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "category_id", nullable = false)
     private ExpenseCategory category;
 
-    @Column(nullable = false)
-    private Double amount;
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal amount;
 
     private String description;
 
-    @Column(nullable = false)
-    private LocalDateTime expenseDate;
-
-    @Column(nullable = false)
-    private String paidBy; // DRIVER or OWNER
-
-    @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    protected Expense() {
-    }
-
-    public Expense(Trip trip,
-            ExpenseCategory category,
-            Double amount,
-            String description,
-            String paidBy) {
-
-        this.trip = trip;
-        this.category = category;
-        this.amount = amount;
-        this.description = description;
-        this.paidBy = paidBy;
-        this.expenseDate = LocalDateTime.now();
+    @PrePersist
+    public void prePersist() {
         this.createdAt = LocalDateTime.now();
     }
+
+    // === Getters and Setters ===
 
     public Long getId() {
         return id;
     }
 
-    public Double getAmount() {
-        return amount;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Trip getTrip() {
         return trip;
     }
 
+    public void setTrip(Trip trip) {
+        this.trip = trip;
+    }
+
     public ExpenseCategory getCategory() {
         return category;
     }
 
+    public void setCategory(ExpenseCategory category) {
+        this.category = category;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
     public String getDescription() {
         return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

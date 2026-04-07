@@ -1,8 +1,9 @@
 package com.transport.tripService.vehicle;
 
-import java.util.List;
 import com.transport.tripService.common.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class VehicleService {
@@ -13,24 +14,20 @@ public class VehicleService {
         this.vehicleRepository = vehicleRepository;
     }
 
-    /**
-     * Register a new vehicle.
-     * Business rule: vehicle number must be unique.
-     */
-    public Vehicle registerVehicle(String vehicleNumber, String ownerName, Double capacity) {
-
-        vehicleRepository.findByVehicleNumber(vehicleNumber)
-                .ifPresent(v -> {
-                    throw new ResourceNotFoundException(
-                            "Vehicle with number " + vehicleNumber + " already exists"
-                    );
-                });
-
-        Vehicle vehicle = new Vehicle(vehicleNumber, ownerName, capacity);
+    public Vehicle createVehicle(CreateVehicleRequest request) {
+        Vehicle vehicle = new Vehicle();
+        vehicle.setRegistrationNumber(request.getRegistrationNumber());
+        vehicle.setVehicleType(request.getVehicleType());
         return vehicleRepository.save(vehicle);
     }
 
-     public List<Vehicle> getAllVehicles() {
+    public List<Vehicle> getAllVehicles() {
         return vehicleRepository.findAll();
+    }
+
+    public Vehicle getVehicleById(Long id) {
+        return vehicleRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Vehicle not found with id: " + id));
     }
 }

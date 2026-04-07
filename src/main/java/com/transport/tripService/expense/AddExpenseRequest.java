@@ -1,8 +1,8 @@
 package com.transport.tripService.expense;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import java.math.BigDecimal;
 
 public class AddExpenseRequest {
 
@@ -14,10 +14,11 @@ public class AddExpenseRequest {
 
     @NotNull(message = "Amount is required")
     @Positive(message = "Amount must be positive")
-    private Double amount;
+    private BigDecimal amount;
 
-    private String paidBy;
     private String description;
+
+    // === Getters and Setters ===
 
     public Long getTripId() {
         return tripId;
@@ -35,11 +36,11 @@ public class AddExpenseRequest {
         this.categoryId = categoryId;
     }
 
-    public Double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(Double amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 
@@ -49,13 +50,5 @@ public class AddExpenseRequest {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getPaidBy() {
-        return paidBy;
-    }
-
-    public void setPaidBy(String paidBy) {
-        this.paidBy = paidBy;
     }
 }

@@ -1,61 +1,59 @@
 package com.transport.tripService.vehicle;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(
-    name = "vehicles",
-    uniqueConstraints = {
-        @UniqueConstraint(columnNames = "vehicle_number")
-    }
-)
+@Table(name = "vehicles")
 public class Vehicle {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "vehicle_number", nullable = false)
-    private String vehicleNumber;
+    @Column(nullable = false, unique = true)
+    private String registrationNumber;
 
-    @Column(name = "owner_name", nullable = false)
-    private String ownerName;
+    private String vehicleType;
 
-    // capacity in tons
-    @Column(nullable = false)
-    private Double capacity;
+    private LocalDateTime createdAt;
 
-    @Column(nullable = false)
-    private Boolean active = true;
-
-    protected Vehicle() {
-        // JPA requires a default constructor
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = LocalDateTime.now();
     }
 
-    public Vehicle(String vehicleNumber, String ownerName, Double capacity) {
-        this.vehicleNumber = vehicleNumber;
-        this.ownerName = ownerName;
-        this.capacity = capacity;
-        this.active = true;
-    }
+    // === Getters and Setters ===
 
     public Long getId() {
         return id;
     }
 
-    public String getVehicleNumber() {
-        return vehicleNumber;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public String getOwnerName() {
-        return ownerName;
+    public String getRegistrationNumber() {
+        return registrationNumber;
     }
 
-    public Double getCapacity() {
-        return capacity;
+    public void setRegistrationNumber(String registrationNumber) {
+        this.registrationNumber = registrationNumber;
     }
 
-    public Boolean getActive() {
-        return active;
+    public String getVehicleType() {
+        return vehicleType;
+    }
+
+    public void setVehicleType(String vehicleType) {
+        this.vehicleType = vehicleType;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }
