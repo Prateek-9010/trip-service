@@ -1,55 +1,59 @@
 package com.transport.tripService.expense;
 
-import com.transport.tripService.trip.Trip;
-import com.transport.tripService.trip.TripRepository;
-import org.springframework.stereotype.Service;
 import com.transport.tripService.common.ResourceNotFoundException;
+import com.transport.tripService.trip.Trip;
+import com.transport.tripService.trip.TripService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ExpenseService {
 
     private final ExpenseRepository expenseRepository;
     private final ExpenseCategoryRepository categoryRepository;
-    private final TripRepository tripRepository;
+    private final TripService tripService;
 
     public ExpenseService(ExpenseRepository expenseRepository,
                           ExpenseCategoryRepository categoryRepository,
-                          TripRepository tripRepository) {
+                          TripService tripService) {
         this.expenseRepository = expenseRepository;
         this.categoryRepository = categoryRepository;
-        this.tripRepository = tripRepository;
+        this.tripService = tripService;
     }
 
-    public Expense addExpense(Long tripId,
-                              Long categoryId,
-                              Double amount,
-                              String description,
-                              String paidBy) {
+    @Transactional
+    public ExpenseResponse addExpense(AddExpenseRequest request) {
+        Trip trip = tripService.getTripEntityById(request.getTripId());
 
-        // Validate trip exists
-        Trip trip = tripRepository.findById(tripId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Trip not found with id: " + tripId)
-                );
+        ExpenseCategory category = categoryRepository.findById(request.getCategoryId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Expense category not found with id: " + request.getCategoryId()));
 
-        // Validate category exists
-        ExpenseCategory category = categoryRepository.findById(categoryId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Expense category not found with id: " + categoryId)
-                );
+        Expense expense = new Expense();
+        expense.setTrip(trip);
+        expense.setCategory(category);
+        expense.setAmount(request.getAmount());
+        expense.setDescription(request.getDescription());
 
-        Expense expense = new Expense(
-                trip,
-                category,
-                amount,
-                description,
-                paidBy
-        );
+        Expense saved = expenseRepository.save(expense);
 
-        return expenseRepository.save(expense);
+        // Convert to DTO INSIDE the transaction (Hibernate session is still open)
+        return ExpenseResponse.fromEntity(saved);
     }
 
-    public Double getTotalExpenseForTrip(Long tripId) {
-        return expenseRepository.getTotalExpenseForTrip(tripId);
+    @Transactional(readOnly = true)
+    public List<ExpenseResponse> getExpensesByTripId(Long tripId) {
+        // Verify trip exists first
+        tripService.getTripEntityById(tripId);
+
+        List<Expense> expenses = expenseRepository.findByTripId(tripId);
+
+        // Convert to DTOs INSIDE the transaction
+        return expenses.stream()
+                .map(ExpenseResponse::fromEntity)
+                .collect(Collectors.toList());
     }
 }
