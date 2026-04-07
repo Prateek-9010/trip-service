@@ -3,22 +3,27 @@ package com.transport.tripService.trip;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import java.math.BigDecimal;
 
 public class CreateTripRequest {
-
 
     @NotNull(message = "Vehicle ID is required")
     private Long vehicleId;
 
-    @NotBlank(message = "Source is required")
-    private String source;
+    @NotNull(message = "Driver ID is required")
+    private Long driverId;
 
-    @NotBlank(message = "Destination is required")
-    private String destination;
+    @NotBlank(message = "From location is required")
+    private String fromLocation;
 
-    @NotNull(message = "Revenue is required")
-    @Positive(message = "Revenue must be positive")
-    private Double revenue;
+    @NotBlank(message = "To location is required")
+    private String toLocation;
+
+    @NotNull(message = "Fare amount is required")
+    @Positive(message = "Fare amount must be positive")
+    private BigDecimal fareAmount;
+
+    // === Getters and Setters ===
 
     public Long getVehicleId() {
         return vehicleId;
@@ -28,27 +33,35 @@ public class CreateTripRequest {
         this.vehicleId = vehicleId;
     }
 
-    public String getSource() {
-        return source;
+    public Long getDriverId() {
+        return driverId;
     }
 
-    public void setSource(String source) {
-        this.source = source;
+    public void setDriverId(Long driverId) {
+        this.driverId = driverId;
     }
 
-    public String getDestination() {
-        return destination;
+    public String getFromLocation() {
+        return fromLocation;
     }
 
-    public void setDestination(String destination) {
-        this.destination = destination;
+    public void setFromLocation(String fromLocation) {
+        this.fromLocation = fromLocation;
     }
 
-    public Double getRevenue() {
-        return revenue;
+    public String getToLocation() {
+        return toLocation;
     }
 
-    public void setRevenue(Double revenue) {
-        this.revenue = revenue;
+    public void setToLocation(String toLocation) {
+        this.toLocation = toLocation;
+    }
+
+    public BigDecimal getFareAmount() {
+        return fareAmount;
+    }
+
+    public void setFareAmount(BigDecimal fareAmount) {
+        this.fareAmount = fareAmount;
     }
 }

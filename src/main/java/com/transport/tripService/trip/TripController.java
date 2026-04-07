@@ -1,11 +1,9 @@
 package com.transport.tripService.trip;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
-
-import com.transport.tripService.expense.ExpenseService;
-
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -14,65 +12,58 @@ import java.util.List;
 public class TripController {
 
     private final TripService tripService;
-    private final TripRepository tripRepository;
-    private final ExpenseService expenseService;
 
-    public TripController(TripService tripService,
-            TripRepository tripRepository,
-            ExpenseService expenseService) {
+    public TripController(TripService tripService) {
         this.tripService = tripService;
-        this.tripRepository = tripRepository;
-        this.expenseService = expenseService;
     }
 
-    /**
-     * Create a new trip
-     */
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public TripResponse createTrip(@Valid @RequestBody CreateTripRequest request) {
-
-        return tripService.createTrip(
-                request.getVehicleId(),
-                request.getSource(),
-                request.getDestination(),
-                request.getRevenue());
+    public ResponseEntity<TripResponse> createTrip(
+            @Valid @RequestBody CreateTripRequest request) {
+        TripResponse response = tripService.createTrip(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    /**
-     * Start trip
-     */
     @PostMapping("/{id}/start")
-    public Trip startTrip(@PathVariable Long id) {
-        return tripService.startTrip(id);
+    public ResponseEntity<TripResponse> startTrip(@PathVariable Long id) {
+        return ResponseEntity.ok(tripService.startTrip(id));
     }
 
-    /**
-     * Complete trip
-     */
     @PostMapping("/{id}/complete")
-    public Trip completeTrip(@PathVariable Long id) {
-        return tripService.completeTrip(id);
+    public ResponseEntity<TripResponse> completeTrip(@PathVariable Long id) {
+        return ResponseEntity.ok(tripService.completeTrip(id));
     }
 
-    /**
-     * Get all trips
-     */
     @GetMapping
-    public List<Trip> getAllTrips() {
-        return tripRepository.findAll();
+    public ResponseEntity<List<TripResponse>> getAllTrips() {
+        return ResponseEntity.ok(tripService.getAllTrips());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<TripResponse> getTripById(@PathVariable Long id) {
+        return ResponseEntity.ok(tripService.getTripById(id));
     }
 
     @GetMapping("/{id}/summary")
-    public TripFinancialSummary getTripSummary(@PathVariable Long id) {
-
-        Double totalExpense = expenseService.getTotalExpenseForTrip(id);
-
-        return tripService.getFinancialSummary(id, totalExpense);
+    public ResponseEntity<TripFinancialSummary> getFinancialSummary(
+            @PathVariable Long id) {
+        return ResponseEntity.ok(tripService.getFinancialSummary(id));
     }
 
     @GetMapping("/{id}/ledger")
-    public TripLedgerResponse getTripLedger(@PathVariable Long id) {
-        return tripService.getLedger(id);
+    public ResponseEntity<TripLedgerResponse> getLedger(@PathVariable Long id) {
+        return ResponseEntity.ok(tripService.getLedger(id));
+    }
+
+    @GetMapping("/driver/{driverId}/active")
+    public ResponseEntity<TripResponse> getActiveTripForDriver(
+            @PathVariable Long driverId) {
+        return ResponseEntity.ok(tripService.getActiveTripForDriver(driverId));
+    }
+
+    @GetMapping("/driver/phone/{phone}/active")
+    public ResponseEntity<TripResponse> getActiveTripByPhone(
+            @PathVariable String phone) {
+        return ResponseEntity.ok(tripService.getActiveTripForDriverPhone(phone));
     }
 }
