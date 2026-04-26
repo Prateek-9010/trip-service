@@ -15,30 +15,38 @@ public class ExpenseCategory {
 
     private String description;
 
-    @Column(nullable = false)
-    private Boolean active = true;
+    // === Constructors ===
 
-    protected ExpenseCategory() {}
+    public ExpenseCategory() {}
 
     public ExpenseCategory(String name, String description) {
         this.name = name;
         this.description = description;
-        this.active = true;
     }
+
+    // === Getters and Setters ===
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getDescription() {
         return description;
     }
 
-    public Boolean getActive() {
-        return active;
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

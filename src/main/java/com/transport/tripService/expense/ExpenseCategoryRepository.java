@@ -8,7 +8,7 @@ import java.util.Optional;
 @Repository
 public interface ExpenseCategoryRepository extends JpaRepository<ExpenseCategory, Long> {
 
-    Optional<ExpenseCategory> findByName(String name);
+    Optional<ExpenseCategory> findByNameIgnoreCase(String name);
 
     boolean existsByName(String name);
 }

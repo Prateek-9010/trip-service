@@ -7,16 +7,16 @@ public class ExpenseResponse {
 
     private Long id;
     private Long tripId;
+    private String tripRoute;
+    private String driverName;
     private String categoryName;
     private Long categoryId;
     private BigDecimal amount;
     private String description;
     private LocalDateTime createdAt;
 
-    // === No-arg constructor ===
     public ExpenseResponse() {}
 
-    // === Static factory: entity → DTO (mapping lives here) ===
     public static ExpenseResponse fromEntity(Expense expense) {
         ExpenseResponse response = new ExpenseResponse();
         response.setId(expense.getId());
@@ -24,9 +24,13 @@ public class ExpenseResponse {
         response.setDescription(expense.getDescription());
         response.setCreatedAt(expense.getCreatedAt());
 
-        // Safe access — we loaded these within the transaction
         if (expense.getTrip() != null) {
             response.setTripId(expense.getTrip().getId());
+            response.setTripRoute(
+                    expense.getTrip().getFromLocation() + " → " + expense.getTrip().getToLocation());
+            if (expense.getTrip().getDriver() != null) {
+                response.setDriverName(expense.getTrip().getDriver().getName());
+            }
         }
 
         if (expense.getCategory() != null) {
@@ -53,6 +57,22 @@ public class ExpenseResponse {
 
     public void setTripId(Long tripId) {
         this.tripId = tripId;
+    }
+
+    public String getTripRoute() {
+        return tripRoute;
+    }
+
+    public void setTripRoute(String tripRoute) {
+        this.tripRoute = tripRoute;
+    }
+
+    public String getDriverName() {
+        return driverName;
+    }
+
+    public void setDriverName(String driverName) {
+        this.driverName = driverName;
     }
 
     public String getCategoryName() {
