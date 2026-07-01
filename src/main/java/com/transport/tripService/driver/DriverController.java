@@ -18,24 +18,24 @@ public class DriverController {
     }
 
     @PostMapping
-    public ResponseEntity<Driver> createDriver(
+    public ResponseEntity<DriverResponse> createDriver(
             @Valid @RequestBody CreateDriverRequest request) {
-        Driver driver = driverService.createDriver(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(driver);
+        DriverResponse response = driverService.createDriver(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping
-    public ResponseEntity<List<Driver>> getAllDrivers() {
+    public ResponseEntity<List<DriverResponse>> getAllDrivers() {
         return ResponseEntity.ok(driverService.getAllDrivers());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Driver> getDriverById(@PathVariable Long id) {
-        return ResponseEntity.ok(driverService.getDriverById(id));
+    public ResponseEntity<DriverResponse> getDriverById(@PathVariable Long id) {
+        return ResponseEntity.ok(driverService.getDriverResponseById(id));
     }
 
     @GetMapping("/phone/{phone}")
-    public ResponseEntity<Driver> getDriverByPhone(@PathVariable String phone) {
-        return ResponseEntity.ok(driverService.getDriverByPhone(phone));
+    public ResponseEntity<DriverResponse> getDriverByPhone(@PathVariable String phone) {
+        return ResponseEntity.ok(driverService.getDriverResponseByPhone(phone));
     }
 }

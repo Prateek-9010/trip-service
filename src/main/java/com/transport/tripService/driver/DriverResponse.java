@@ -1,27 +1,28 @@
 package com.transport.tripService.driver;
 
-import com.transport.tripService.common.BaseEntity;
-import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "drivers")
-public class Driver extends BaseEntity {
+public class DriverResponse {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false)
     private String name;
-
-    @Column(nullable = false, unique = true)
     private String phone;
-
-    @Column(unique = true)
     private String licenseNumber;
+    private boolean active;
+    private LocalDateTime createdAt;
 
-    @Column(nullable = false)
-    private boolean active = true;
+    public DriverResponse() {}
+
+    public static DriverResponse fromEntity(Driver driver) {
+        DriverResponse response = new DriverResponse();
+        response.setId(driver.getId());
+        response.setName(driver.getName());
+        response.setPhone(driver.getPhone());
+        response.setLicenseNumber(driver.getLicenseNumber());
+        response.setActive(driver.isActive());
+        response.setCreatedAt(driver.getCreatedAt());
+        return response;
+    }
 
     // === Getters and Setters ===
 
@@ -63,5 +64,13 @@ public class Driver extends BaseEntity {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

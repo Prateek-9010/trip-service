@@ -5,6 +5,7 @@ import com.transport.tripService.common.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class DriverService {
@@ -15,7 +16,7 @@ public class DriverService {
         this.driverRepository = driverRepository;
     }
 
-    public Driver createDriver(CreateDriverRequest request) {
+    public DriverResponse createDriver(CreateDriverRequest request) {
         if (driverRepository.existsByPhone(request.getPhone())) {
             throw new BadRequestException(
                     "Driver with phone " + request.getPhone() + " already exists");
@@ -32,13 +33,28 @@ public class DriverService {
         driver.setPhone(request.getPhone());
         driver.setLicenseNumber(request.getLicenseNumber());
 
-        return driverRepository.save(driver);
+        Driver saved = driverRepository.save(driver);
+        return DriverResponse.fromEntity(saved);
     }
 
-    public List<Driver> getAllDrivers() {
-        return driverRepository.findAll();
+    public List<DriverResponse> getAllDrivers() {
+        return driverRepository.findAll()
+                .stream()
+                .map(DriverResponse::fromEntity)
+                .collect(Collectors.toList());
     }
 
+    public DriverResponse getDriverResponseById(Long id) {
+        Driver driver = getDriverById(id);
+        return DriverResponse.fromEntity(driver);
+    }
+
+    public DriverResponse getDriverResponseByPhone(String phone) {
+        Driver driver = getDriverByPhone(phone);
+        return DriverResponse.fromEntity(driver);
+    }
+
+    // === INTERNAL: Used by other services (TripService, ExpenseService) ===
     public Driver getDriverById(Long id) {
         return driverRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(

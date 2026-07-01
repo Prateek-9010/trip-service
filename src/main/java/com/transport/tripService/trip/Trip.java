@@ -1,5 +1,6 @@
 package com.transport.tripService.trip;
 
+import com.transport.tripService.common.BaseEntity;
 import com.transport.tripService.driver.Driver;
 import com.transport.tripService.vehicle.Vehicle;
 import jakarta.persistence.*;
@@ -8,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "trips")
-public class Trip {
+public class Trip extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,26 +22,24 @@ public class Trip {
     @Column(nullable = false)
     private TripStatus status;
 
-    @Column(nullable = false)
+    @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal fareAmount;
 
-    private LocalDateTime createdAt;
     private LocalDateTime startedAt;
     private LocalDateTime completedAt;
 
-    // === EXISTING: Vehicle binding ===
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "vehicle_id", nullable = false)
     private Vehicle vehicle;
 
-    // === NEW: Driver binding ===
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "driver_id", nullable = false)
     private Driver driver;
 
     @PrePersist
-    public void prePersist() {
-        this.createdAt = LocalDateTime.now();
+    @Override
+    protected void onCreate() {
+        super.onCreate();
         this.status = TripStatus.CREATED;
     }
 
@@ -84,14 +83,6 @@ public class Trip {
 
     public void setFareAmount(BigDecimal fareAmount) {
         this.fareAmount = fareAmount;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
     }
 
     public LocalDateTime getStartedAt() {

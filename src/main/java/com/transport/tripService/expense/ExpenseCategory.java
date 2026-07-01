@@ -1,10 +1,11 @@
 package com.transport.tripService.expense;
 
+import com.transport.tripService.common.BaseEntity;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "expense_categories")
-public class ExpenseCategory {
+public class ExpenseCategory extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

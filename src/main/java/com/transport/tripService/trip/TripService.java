@@ -201,7 +201,7 @@ public class TripService {
     // ============================================================
     // PRIVATE — Business invariant
     // ============================================================
-    private void validateDriverHasNoActiveTrip(Long driverId) {
+        private void validateDriverHasNoActiveTrip(Long driverId) {
         boolean hasCreatedTrip = tripRepository.existsByDriverIdAndStatus(
                 driverId, TripStatus.CREATED);
         boolean hasStartedTrip = tripRepository.existsByDriverIdAndStatus(
@@ -210,7 +210,7 @@ public class TripService {
         if (hasCreatedTrip) {
             throw new BadRequestException(
                     "Driver already has a trip in CREATED status. "
-                            + "Complete or cancel it first.");
+                            + "Start, complete, or cancel it first.");
         }
 
         if (hasStartedTrip) {
@@ -219,4 +219,25 @@ public class TripService {
                             + "Complete it first.");
         }
     }
+
+    // ============================================================
+    // TRIP CANCEL — Only from CREATED status
+    // ============================================================
+    @Transactional
+    public TripResponse cancelTrip(Long tripId) {
+        Trip trip = getTripEntityById(tripId);
+
+        if (trip.getStatus() != TripStatus.CREATED) {
+            throw new BadRequestException(
+                    "Trip can only be cancelled from CREATED status. Current: "
+                            + trip.getStatus()
+                            + ". If trip is STARTED, it must be completed.");
+        }
+
+        trip.setStatus(TripStatus.CANCELLED);
+
+        Trip saved = tripRepository.save(trip);
+        return TripResponse.fromEntity(saved);
+    }
+    
 }

@@ -1,13 +1,13 @@
 package com.transport.tripService.expense;
 
+import com.transport.tripService.common.BaseEntity;
 import com.transport.tripService.trip.Trip;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "expenses")
-public class Expense {
+public class Expense extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,13 +25,6 @@ public class Expense {
     private BigDecimal amount;
 
     private String description;
-
-    private LocalDateTime createdAt;
-
-    @PrePersist
-    public void prePersist() {
-        this.createdAt = LocalDateTime.now();
-    }
 
     // === Getters and Setters ===
 
@@ -73,13 +66,5 @@ public class Expense {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
     }
 }

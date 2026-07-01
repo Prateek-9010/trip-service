@@ -1,11 +1,11 @@
 package com.transport.tripService.vehicle;
 
+import com.transport.tripService.common.BaseEntity;
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "vehicles")
-public class Vehicle {
+public class Vehicle extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,14 +16,7 @@ public class Vehicle {
 
     private String vehicleType;
 
-    private LocalDateTime createdAt;
-
-    @PrePersist
-    public void prePersist() {
-        this.createdAt = LocalDateTime.now();
-    }
-
-    // === Getters and Setters ===
+    // === Getters and Setters (NO createdAt — inherited!) ===
 
     public Long getId() {
         return id;
@@ -47,13 +40,5 @@ public class Vehicle {
 
     public void setVehicleType(String vehicleType) {
         this.vehicleType = vehicleType;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
     }
 }

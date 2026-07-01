@@ -66,4 +66,10 @@ public class TripController {
             @PathVariable String phone) {
         return ResponseEntity.ok(tripService.getActiveTripForDriverPhone(phone));
     }
+
+    @PostMapping("/{id}/cancel")
+    public ResponseEntity<TripResponse> cancelTrip(@PathVariable Long id) {
+        return ResponseEntity.ok(tripService.cancelTrip(id));
+    }
+    
 }
